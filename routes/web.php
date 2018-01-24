@@ -122,6 +122,8 @@ Route::get('/homepage',function(){
 	return view('homepage');
 })->name('homepage');
 
+Route::get('/homepage/lesson/{id}', 'LessonController@getLesson');
+
 Route::post('/subject','subjectController@submit');
 
 

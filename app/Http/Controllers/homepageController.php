@@ -7,17 +7,18 @@ use Illuminate\Support\Facades\Input;
 use App\User;
 
 
-
 class homepageController extends Controller
 {
-	
- public function index(){
 
- 	$user = User ::select('name','email','dob','usertype')->whereusertype('student')
- 	->get();
+    public function index()
+    {
 
- 	$data=['user'=>$user];
- 	return view('assignSubject',$data);
- }
+        $user = User::select('name', 'email', 'dob', 'usertype')->whereusertype('student')
+            ->get();
+
+        $data = ['user' => $user];
+        return view('assignSubject', $data);
+
+    }
 
 }

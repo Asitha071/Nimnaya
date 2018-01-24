@@ -13,45 +13,49 @@ use Notification;
 
 class LessonController extends Controller
 {
-    public function submit(){
-    	
+    public function submit()
+    {
+        $grade = Input::get('grade');
+        $lesson = Input::get('lesson');
+        $file = Input::file('file');
+        $video = Input::get('video');
+
+        $rules = array('grade' => 'required', 'lesson' => 'required', 'file' => 'required|max:10000|mimes:doc,docx,pdf,jpeg,png,jpg', 'video' => 'required');
+        $validator = Validator::make(Input::all(), $rules);
+
+        if ($validator->fails()) {
+            $messages = $validator->messages();
+
+            return Redirect::to('lesson')->withInput()->withErrors(
+                $validator);
+        } elseif ($validator->passes()) {
+            //echo "success validator";
+            if (Input::file('file')->isValid()) {
+                $extension = Input::file('file')->getClientOriginalExtension();
+                $filename = rand(11111, 99999) . '.' . $extension;
+
+                $destinationPath = 'uploadednotes';
+
+                $file->move($destinationPath, $filename);
+
+                $data = array('grade' => $grade, 'lesson' => $lesson, 'file' => $filename, 'video' => $video,);
+
+                Lesson::insert($data);
+                return redirect('lesson')->with('success', 'lesson added successfully');
+            }
+        }
+    }
+
+    public function getLesson(Request $request, $id)
+    {
+        $data = array();
+        $data = Lesson::all();
+
+//        var_dump($data);die;
 
 
-    	$grade=Input::get('grade');
-    	$lesson=Input::get('lesson');
-    $file = Input::file('file');
-    $video=Input::get('video');
-    
-     $rules  = array('grade' =>'required' ,'lesson' =>'required' ,'file' =>'required|max:10000|mimes:doc,docx,pdf,jpeg,png,jpg','video' =>'required' );
-     	$validator=Validator::make(Input::all(),$rules);
-
-      if ($validator->fails()) {
-      $messages=$validator->messages();
-
-      return Redirect::to('lesson')->withInput()->withErrors(
-        $validator);
-      }
-      elseif ($validator->passes()) {
-        //echo "success validator";
-if (Input::file('file')->isValid()) {
- $extension=Input::file('file')->getClientOriginalExtension();
- $filename = rand(11111,99999).'.'.$extension;
-
-
- $destinationPath = 'uploadednotes';
-
-
- $file->move($destinationPath, $filename);
-
- $data=array('grade'=>$grade,'lesson'=>$lesson,'file'=>$filename,'video'=>$video,);
-
-Lesson::insert($data);
- return redirect('lesson')->with('success','lesson added successfully');
-
-    
-}
-}
-}
+        return view('getlesson', array('lessons' => $data));
+    }
 }
    
 
